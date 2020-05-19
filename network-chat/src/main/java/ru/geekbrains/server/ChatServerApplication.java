@@ -1,5 +1,9 @@
 package ru.geekbrains.server;
 
+import javafx.application.Application;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.geekbrains.server.auth.AuthService;
 import ru.geekbrains.server.auth.AuthServiceJdbcImpl;
 import ru.geekbrains.server.persistance.UserRepository;
@@ -19,6 +23,11 @@ public class ChatServerApplication {
 //        }
 //        AuthService auth = new AuthServiceJdbcImpl(userRepository);
 //        ChatServer chatServer = new ChatServer(auth);
+
+        ApplicationContext context = new AnnotationConfigApplicationContext(SpringContext.class); //Java-configuration
+//        ApplicationContext context = new ClassPathXmlApplicationContext("spring-context.xml");// xml-configuration + annotation-configuration - uncomment to use
+
+        ChatServer chatServer =  context.getBean("chatServer",ChatServer.class);
         chatServer.start(7777);
     }
 }
