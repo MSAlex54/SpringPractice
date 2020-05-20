@@ -27,7 +27,6 @@ public class UserController {
     @GetMapping
     public String userList(Model model) {
         logger.info("User list");
-
         model.addAttribute("users", userRepository.findAll());
         return "users";
     }
