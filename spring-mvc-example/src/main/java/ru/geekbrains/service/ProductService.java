@@ -1,13 +1,17 @@
 package ru.geekbrains.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.geekbrains.persist.entity.Product;
 import ru.geekbrains.persist.repo.ProductRepository;
 
 import java.math.BigDecimal;
-import java.util.List;
 
+
+@Service
 public class ProductService {
 
     private ProductRepository repository;
@@ -23,43 +27,29 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<Product> findAll() {
-        return repository.findAll();
+    public Page<Product> filterAll(String title, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable) {
+        if (title.equals("") && minPrice.intValue() == 0 && maxPrice.intValue() == 0) {
+            return repository.findAll(pageable);
+        } else if (title.equals("") && minPrice.intValue() == 0 && maxPrice.intValue() != 0) {
+            return repository.findAllByPriceLessThanEqual(maxPrice,pageable);
+        } else if (title.equals("") && minPrice.intValue() != 0 && maxPrice.intValue() == 0) {
+            return repository.findAllByPriceGreaterThanEqual(minPrice,pageable);
+        } else if (title.equals("") && minPrice.intValue() != 0 && maxPrice.intValue() != 0) {
+            return repository.findAllByPriceBetween(minPrice, maxPrice,pageable);
+        } else if (!title.equals("") && minPrice.intValue() == 0 && maxPrice.intValue() == 0) {
+            return repository.findAllByTitleContains(title,pageable);
+        } else if (!title.equals("") && minPrice.intValue() == 0 && maxPrice.intValue() != 0) {
+            return repository.findAllByTitleContainsAndPriceLessThanEqual(title, maxPrice,pageable);
+        } else if (!title.equals("") && minPrice.intValue() != 0 && maxPrice.intValue() == 0) {
+            return repository.findAllByTitleContainsAndPriceGreaterThanEqual(title, minPrice,pageable);
+        } else {
+            return repository.findAllByTitleContainsAndPriceBetween(title, minPrice, maxPrice,pageable);
+        }
     }
-
-    @Transactional(readOnly = true)
-    public List<Product> findAllByTitle(String title) {
-        return repository.findAllByTitle(title);
+    public void removeById(Long id) {
+        repository.deleteById(id);
     }
-
-    @Transactional(readOnly = true)
-    public List<Product> findAllByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice) {
-        return repository.findAllByPriceBetween(minPrice, maxPrice);
+    public Product getById(Long id) {
+        return repository.getById(id);
     }
-
-    @Transactional(readOnly = true)
-    public List<Product> findAllByPriceBefore(BigDecimal maxPrice) {
-        return repository.findAllByPriceBefore(maxPrice);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Product> findAllByPriceAfter(BigDecimal minPrice) {
-        return repository.findAllByPriceAfter(minPrice);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Product> findAllByTitleAndPriceBetween(String title, BigDecimal minPrice, BigDecimal maxPrice) {
-        return repository.findAllByTitleAndPriceBetween(title, minPrice, maxPrice);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Product> findAllByTitleAndPriceAfter(String title, BigDecimal minPrice) {
-        return repository.findAllByTitleAndPriceAfter(title, minPrice);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Product> findAllByTitleAndPriceBefore(String title, BigDecimal maxPrice){
-        return repository.findAllByTitleAndPriceBefore(title, maxPrice);
-    }
-
 }
