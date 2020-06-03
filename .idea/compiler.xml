@@ -12,5 +12,8 @@
         <module name="servlet-example" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="boot_practice" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
