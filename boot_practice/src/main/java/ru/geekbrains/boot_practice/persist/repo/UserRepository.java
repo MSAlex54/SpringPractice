@@ -9,11 +9,13 @@ import org.springframework.stereotype.Repository;
 import ru.geekbrains.boot_practice.persist.entity.User;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByName(String name);
+    Optional<User> findById(long id);
 
     Page<User> findByAgeGreaterThanEqual(Integer age, Pageable pageable);
 

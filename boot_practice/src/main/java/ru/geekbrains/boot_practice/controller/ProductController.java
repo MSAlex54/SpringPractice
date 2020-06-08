@@ -14,6 +14,7 @@ import ru.geekbrains.boot_practice.service.ProductService;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @RequestMapping("/product")
 @Controller
@@ -55,14 +56,14 @@ public class ProductController {
 
     @GetMapping(path="/update/{id}")
     public String updateById(Model model, @PathVariable(value = "id") Long productId) {
-        Product product = productService.getById(productId);
+        Optional<Product> product = productService.findById(productId);
         model.addAttribute("product", product);
         return "product";
     }
 
     @GetMapping(path="/remove/{id}")
     public String removeById(@PathVariable(value = "id") Long productId) {
-        productService.removeById(productId);
+        productService.delete(productId);
         return "redirect:/product/list";
     }
 

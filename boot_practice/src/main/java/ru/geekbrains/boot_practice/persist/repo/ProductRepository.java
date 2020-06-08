@@ -5,12 +5,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import ru.geekbrains.boot_practice.persist.entity.Product;
+import ru.geekbrains.boot_practice.persist.entity.User;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
+//    Optional<Product> findById(long id);
     Page<Product> findAllByTitleContains(String tittle, Pageable pageable);
     Page<Product> findAllByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
     Page<Product> findAllByPriceLessThanEqual(BigDecimal maxPrice, Pageable pageable);
