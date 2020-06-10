@@ -6,10 +6,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.geekbrains.boot_practice.persist.entity.Product;
+import ru.geekbrains.boot_practice.persist.entity.User;
 import ru.geekbrains.boot_practice.persist.repo.ProductRepository;
 
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -47,10 +50,19 @@ public class ProductService {
             return repository.findAllByTitleContainsAndPriceBetween(title, minPrice, maxPrice,pageable);
         }
     }
-    public void removeById(Long id) {
-        repository.deleteById(id);
+
+    @Transactional(readOnly = true)
+    public List<Product> findAll() {
+        return repository.findAll();
     }
-    public Product getById(Long id) {
-        return repository.getById(id);
+
+
+    @Transactional(readOnly = true)
+    public Optional<Product> findById(long id) {
+        return repository.findById(id);
+    }
+
+    public void delete(long id) {
+        repository.deleteById(id);
     }
 }
