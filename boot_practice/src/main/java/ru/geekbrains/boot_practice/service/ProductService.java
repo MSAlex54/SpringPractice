@@ -6,9 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.geekbrains.boot_practice.persist.entity.Product;
-import ru.geekbrains.boot_practice.persist.entity.User;
 import ru.geekbrains.boot_practice.persist.repo.ProductRepository;
-
 
 import java.math.BigDecimal;
 import java.util.List;

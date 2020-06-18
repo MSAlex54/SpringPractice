@@ -5,18 +5,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import ru.geekbrains.boot_practice.persist.entity.User;
+import ru.geekbrains.boot_practice.persist.repo.RoleRepository;
+import ru.geekbrains.boot_practice.rest.NotFoundException;
 import ru.geekbrains.boot_practice.service.UserService;
 
 import javax.validation.Valid;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 
@@ -27,34 +27,55 @@ public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RoleRepository roleRepository) {
         this.userService = userService;
+        this.roleRepository = roleRepository;
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public String userList(Model model,
-                           @RequestParam(name = "minAge", required = false) Integer minAge,
-                           @RequestParam(name = "maxAge", required = false) Integer maxAge,
-                           @RequestParam("page") Optional<Integer> page,
-                           @RequestParam("size") Optional<Integer> size) {
+                                @RequestParam(name = "minAge", required = false) Integer minAge,
+                                @RequestParam(name = "maxAge", required = false) Integer maxAge,
+                                @RequestParam (name = "page", defaultValue = "1", required = false) Integer page,
+                                @RequestParam (name = "size", defaultValue = "5", required = false) Integer size
+                            ) {
         logger.info("User list. With minAge = {} and maxAge = {}", minAge, maxAge);
 
         Page<User> userPage = userService.filterByAge(minAge, maxAge,
-                PageRequest.of(page.orElse(1) - 1, size.orElse(5)));
+                PageRequest.of(page- 1, size)
+        );
         model.addAttribute("usersPage", userPage);
         model.addAttribute("prevPageNumber", userPage.hasPrevious() ? userPage.previousPageable().getPageNumber() + 1 : -1);
         model.addAttribute("nextPageNumber", userPage.hasNext() ? userPage.nextPageable().getPageNumber() + 1 : -1);
         return "users";
     }
 
-    @GetMapping("new")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/new")
     public String createUser(Model model) {
         logger.info("Create user form");
-
         model.addAttribute("user", new User());
+        model.addAttribute("roles", roleRepository.findAll());
         return "user";
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping(path="/update/{id}")
+    public String updateById(Model model, @PathVariable(value = "id") Long userId) {
+        model.addAttribute("user",  userService.findById(userId)
+                .orElseThrow(() -> new NotFoundException()));
+        model.addAttribute("roles", roleRepository.findAll());
+        return "user";
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping(path="/remove/{id}")
+    public String removeById(@PathVariable(value = "id") Long userId) {
+        userService.delete(userId);
+        return "redirect:/user/list";
     }
 
     @PostMapping
@@ -70,16 +91,15 @@ public class UserController {
             return "user";
         }
 
-        //Password validation
-        Pattern kirillPat = Pattern.compile("^.*[А-Яа-я].*$");
-        Pattern mainPat = Pattern.compile("(?=^.{8,}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$");//Честно стырено с Хабра, но всё понятно
-        if (!(mainPat.matcher(user.getPassword()).matches()& !kirillPat.matcher(user.getPassword()).matches())) {
-            bindingResult.rejectValue("password", "", "Пароль слишком простой");
-            return "user";
-        }
-
+//        //Password validation
+//        Pattern kirillPat = Pattern.compile("^.*[А-Яа-я].*$");
+//        Pattern mainPat = Pattern.compile("(?=^.{8,}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$");//Честно стырено с Хабра, но всё понятно
+//        if (!(mainPat.matcher(user.getPassword()).matches()& !kirillPat.matcher(user.getPassword()).matches())) {
+//            bindingResult.rejectValue("password", "", "Пароль слишком простой");
+//            return "user";
+//        }
 
         userService.save(user);
-        return "redirect:/user";
+        return "redirect:/user/list";
     }
 }

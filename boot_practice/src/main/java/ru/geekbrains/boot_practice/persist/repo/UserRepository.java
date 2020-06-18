@@ -25,4 +25,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("from User u where u.name like :pattern")
     List<User> queryByNamePattern(@Param("pattern") String pattern);
+
+    Optional<User> findUserByName(String userName);
+
 }
