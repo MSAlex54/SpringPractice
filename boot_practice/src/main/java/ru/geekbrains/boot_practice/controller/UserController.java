@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -91,13 +90,13 @@ public class UserController {
             return "user";
         }
 
-//        //Password validation
-//        Pattern kirillPat = Pattern.compile("^.*[А-Яа-я].*$");
-//        Pattern mainPat = Pattern.compile("(?=^.{8,}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$");//Честно стырено с Хабра, но всё понятно
-//        if (!(mainPat.matcher(user.getPassword()).matches()& !kirillPat.matcher(user.getPassword()).matches())) {
-//            bindingResult.rejectValue("password", "", "Пароль слишком простой");
-//            return "user";
-//        }
+        //Password validation
+        Pattern kirillPat = Pattern.compile("^.*[А-Яа-я].*$");
+        Pattern mainPat = Pattern.compile("(?=^.{8,}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$");//Честно стырено с Хабра, но всё понятно
+        if (!(mainPat.matcher(user.getPassword()).matches()& !kirillPat.matcher(user.getPassword()).matches())) {
+            bindingResult.rejectValue("password", "", "Пароль слишком простой");
+            return "user";
+        }
 
         userService.save(user);
         return "redirect:/user/list";
