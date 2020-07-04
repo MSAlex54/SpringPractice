@@ -1,4 +1,5 @@
 <!doctype html>
+<html lang="en">
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
@@ -10,39 +11,39 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"/>
-    <title>Product</title>
+    <title>User</title>
 </head>
 
 <body>
+
+
+<body>
+
 <div class="fluid-container">
     <nav>
-        <div th:replace="~{nav-bar::navBar(products)}"/>
+        <div th:replace="~{nav-bar::navBar(home)}"/>
     </nav>
 </div>
+
 <div class="container">
-    <div class="row">
+    <div class="row py-2">
         <div class="col-12">
-            <form th:action="@{/product}" method="post" th:object="${product}">
-                <input th:type="hidden" th:field="*{id}">
+            <form th:action="@{/home}" method="post">
                 <div class="form-group">
-                    <label for="title">Title</label>
-                    <input type="text" id="title" th:field="*{title}" class="form-control" placeholder="Enter title">
+                    <label for="username">Имя пользователя</label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Введите имя пользователя">
+                    <small class="form-text text-danger">Некорректное имя пользователя или пароль</small>
                 </div>
                 <div class="form-group">
-                    <label for="description">Description</label>
-                    <input type="text" id="description" th:field="*{description}" class="form-control" placeholder="Enter Description">
+                    <label for="password">Пароль</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Введите пароль">
                 </div>
-                <div class="form-group">
-                    <label for="price">Price</label>
-                    <input type="number" id="price" step="0.01"  th:field="*{price}" class="form-control" placeholder="Enter price">
-                    <small id="priceError" class="form-text text-error"
-                           th:if="${#fields.hasErrors('price')}" th:errors="*{price}">Validation error</small>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary">Логин</button>
             </form>
         </div>
     </div>
 </div>
+
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

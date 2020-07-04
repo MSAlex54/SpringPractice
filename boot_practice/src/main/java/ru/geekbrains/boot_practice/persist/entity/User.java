@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -19,8 +20,14 @@ public class User {
     private String name;
 
     @NotBlank
-    @Column(length = 32, nullable = false)
+    @Column(length = 128, nullable = false)
     private String password;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles;
 
     @JsonIgnore
     @Transient
@@ -36,10 +43,11 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String name, String password) {
+    public User(Long id, String name, String password, Role role) {
         this.id = id;
         this.name = name;
         this.password = password;
+        this.roles.add(role);
     }
 
     public Long getId() {
@@ -88,5 +96,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }

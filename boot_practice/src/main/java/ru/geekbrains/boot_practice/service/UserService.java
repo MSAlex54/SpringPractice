@@ -3,6 +3,7 @@ package ru.geekbrains.boot_practice.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.geekbrains.boot_practice.persist.entity.User;
@@ -14,11 +15,13 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private UserRepository repository;
+    private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository repository) {
+    public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional(readOnly = true)
@@ -41,6 +44,7 @@ public class UserService {
 
     @Transactional
     public void save(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         repository.save(user);
     }
 

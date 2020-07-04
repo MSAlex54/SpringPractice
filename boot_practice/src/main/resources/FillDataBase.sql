@@ -54,3 +54,10 @@ INSERT INTO users (name, password, age, email) VALUES
 ('user11', 'qwerty11', '46', 'mail11@mail.ru'),
 ('user12', 'qwerty12', '47', 'mail12@mail.ru')
 ;
+DROP TABLE IF EXISTS roles;
+CREATE TABLE roles (
+                          id bigint NOT NULL AUTO_INCREMENT,
+                          name varchar(100) NOT NULL
+);
+
+INSERT INTO roles (name) VALUES ('ROLE_SUPERADMIN','ROLE_ADMIN','ROLE_GUEST');
